@@ -3,6 +3,8 @@ package com.ms.email.services;
 import com.ms.email.enums.StatusEmail;
 import com.ms.email.models.EmailModel;
 import com.ms.email.repositories.EmailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,8 @@ import java.util.UUID;
 
 @Service
 public class EmailService {
+
+    private final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     EmailRepository emailRepository;
@@ -38,6 +42,7 @@ public class EmailService {
 
             emailModel.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e){
+            log.error(e.getMessage());
             emailModel.setStatusEmail(StatusEmail.ERROR);
         } finally {
             return emailRepository.save(emailModel);
