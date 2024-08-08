@@ -25,7 +25,7 @@ public class EmailController {
     EmailService emailService;
 
     @PostMapping("/enviar-email")
-    public ResponseEntity<EmailModel> sendingEmail(@RequestBody @Valid EmailDto emailDto) {
+    public ResponseEntity<EmailModel> enviarEmail(@RequestBody @Valid EmailDto emailDto) {
         EmailModel emailModel = new EmailModel();
         BeanUtils.copyProperties(emailDto, emailModel);
         emailService.sendEmail(emailModel);
@@ -33,12 +33,12 @@ public class EmailController {
     }
 
     @GetMapping("/pegar-todos-emails")
-    public ResponseEntity<Page<EmailModel>> getAllEmails(@PageableDefault(page = 0, size = 5, sort = "emailId", direction = Sort.Direction.DESC) Pageable pageable){
+    public ResponseEntity<Page<EmailModel>> pegarTodosEmails(@PageableDefault(page = 0, size = 5, sort = "emailId", direction = Sort.Direction.DESC) Pageable pageable){
         return new ResponseEntity<>(emailService.findAll(pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/pegar-email/{emailId}")
-    public ResponseEntity<Object> getOneEmail(@PathVariable(value="emailId") UUID emailId){
+    @GetMapping("/pegar-email-por-id/{emailId}")
+    public ResponseEntity<Object> pegatEmailPorId(@PathVariable(value="emailId") UUID emailId){
         Optional<EmailModel> emailModelOptional = emailService.findById(emailId);
         if(!emailModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found.");
