@@ -3,6 +3,7 @@ package com.ms.email.services;
 import com.ms.email.enums.StatusEmail;
 import com.ms.email.models.EmailModel;
 import com.ms.email.repositories.EmailRepository;
+import com.sun.mail.util.MailConnectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,10 @@ public class EmailService {
 
             emailModel.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e){
-            log.error("ERRO AO  ENVIAR EMIAL: " + e.getCause());
-            emailModel.setStatusEmail(StatusEmail.valueOf(e.getMessage().toString()));
+            String specificMessage = extractSpecificMessage(e);
+            log.error("ERRO AO ENVIAR EMAIL: " + specificMessage);
+            emailModel.setStatusEmail(StatusEmail.ERROR);
+            emailModel.setMessageError(specificMessage);
         } finally {
             return emailRepository.save(emailModel);
         }
@@ -55,5 +58,16 @@ public class EmailService {
 
     public Optional<EmailModel> findById(UUID emailId) {
         return emailRepository.findById(emailId);
+    }
+
+    private String extractSpecificMessage(MailException e) {
+        Throwable cause = e.getCause();
+        while (cause != null && !(cause instanceof MailConnectException)) {
+            cause = cause.getCause();
+        }
+        if (cause instanceof MailConnectException) {
+            return cause.getMessage();
+        }
+        return e.getMessage();  // Fallback to the general message if specific cause is not found
     }
 }
