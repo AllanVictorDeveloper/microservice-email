@@ -23,6 +23,7 @@ public class EmailModel implements Serializable {
     private String subject;
     @Column(columnDefinition = "TEXT")
     private String text;
+    private String messageError;
     private LocalDateTime sendDateEmail;
     private StatusEmail statusEmail;
 }
