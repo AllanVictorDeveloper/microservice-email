@@ -42,8 +42,8 @@ public class EmailService {
 
             emailModel.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e){
-            log.error(e.getMessage());
-            emailModel.setStatusEmail(StatusEmail.ERROR);
+            log.error("ERRO AO  ENVIAR EMIAL: " + e.getMessage());
+            emailModel.setStatusEmail(StatusEmail.valueOf(e.getMessage().toString()));
         } finally {
             return emailRepository.save(emailModel);
         }
